@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tra cứu TikTok User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CDN cho đẹp -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title text-center mb-4">Tra cứu TikTok User</h3>
+                        <form id="tiktokForm">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Nhập username TikTok</label>
+                                <input type="text" class="form-control" id="username" placeholder="Ví dụ: khangdino206" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Tra cứu</button>
+                        </form>
+                        <div id="result" class="mt-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.getElementById('tiktokForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '<div class="text-center text-secondary">Đang tra cứu...</div>';
+
+        try {
+            const res = await fetch(`https://ahihi.x10.mx/fltik.php?key=khang&user=${encodeURIComponent(username)}`);
+            const data = await res.json();
+
+            if (data.status === 'success' || data.success) {
+                resultDiv.innerHTML = `
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="${data.profilePic || 'https://tikfollowers.com/theme/images/white-user.png'}" alt="Avatar" class="rounded-circle mb-2" width="80" height="80">
+                            <h5 class="card-title">@${data.username}</h5>
+                            <p class="mb-1"><strong>Họ tên:</strong> ${data.nickname || 'Không có'}</p>
+                            <p class="mb-1"><strong>Follower:</strong> ${data.followers_count}</p>
+                            <p class="mb-1"><strong>Bio:</strong> ${data.bio || 'Không có'}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-danger">${data.message || 'Không lấy được thông tin.'}</div>`;
+            }
+        } catch (err) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Lỗi khi gọi API hoặc không tìm thấy user!</div>`;
+        }
+    });
+    </script>
+</body>
+</html>
